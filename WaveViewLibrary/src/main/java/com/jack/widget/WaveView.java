@@ -220,12 +220,14 @@ public class WaveView extends LinearLayout {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int minWidth = mChildViews.length * mChildWidth + (mChildViews.length - 1) * mChildMargin
+        // 计算所需的宽度，有可能计算值超出了可以显示的宽度
+        int calcWidth = mChildViews.length * mChildWidth + (mChildViews.length - 1) * mChildMargin
                 + getPaddingLeft() + getPaddingRight();
         if (widthMode == MeasureSpec.EXACTLY) {
-            widthSize = Math.max(minWidth, widthSize);
+            widthSize = Math.min(calcWidth, widthSize);
         } else {
-            widthSize = minWidth;
+            // 忽略计算宽度大于可以显示宽度的情况
+            widthSize = calcWidth;
         }
         if (heightMode == MeasureSpec.EXACTLY) {
             mChildHeight = heightSize - getPaddingBottom() - getPaddingTop();
