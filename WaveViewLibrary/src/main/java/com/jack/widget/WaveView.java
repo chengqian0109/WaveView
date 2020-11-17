@@ -140,6 +140,7 @@ public class WaveView extends LinearLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     mFractions[finalI] = (float) animation.getAnimatedValue();
+                    System.out.println("aaa===");
                 }
             });
             mValueAnimators[i] = animator;
@@ -183,6 +184,9 @@ public class WaveView extends LinearLayout {
         super.onWindowFocusChanged(hasWindowFocus);
         if (hasWindowFocus) {
             invalidate();
+            startAnim();
+        } else {
+            stopAnim();
         }
     }
 
@@ -190,6 +194,9 @@ public class WaveView extends LinearLayout {
     public void invalidate() {
         if (hasWindowFocus()) {
             super.invalidate();
+            startAnim();
+        } else {
+            stopAnim();
         }
     }
 
