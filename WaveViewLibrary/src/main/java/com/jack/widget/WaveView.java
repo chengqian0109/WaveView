@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -89,10 +88,6 @@ public class WaveView extends LinearLayout {
             int bgColor = typedArray.getColor(R.styleable.WaveView_waveBackground, Color.TRANSPARENT);
             setBackgroundColor(bgColor);
         }
-        Paint paint = new Paint();
-        paint.setColor(mColor);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(8);
         typedArray.recycle();
 
         setOrientation(LinearLayout.HORIZONTAL);
