@@ -76,6 +76,10 @@ public class WaveView extends LinearLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WaveView);
         mColor = typedArray.getColor(R.styleable.WaveView_waveColor, Color.WHITE);
         int count = typedArray.getInt(R.styleable.WaveView_waveCount, 3);
+        int waveWidth = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveWidth, mChildWidth);
+        mChildWidth = Math.max(waveWidth, mChildWidth);
+        int waveMargin = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveMargin, mChildMargin);
+        mChildMargin = Math.max(waveMargin, mChildMargin);
         mAnimDuration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, 240);
         mAnimDelay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, 100);
         Drawable drawable = typedArray.getDrawable(R.styleable.WaveView_waveBackground);

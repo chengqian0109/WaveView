@@ -14,9 +14,11 @@
 
     <com.jack.widget.WaveView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_marginTop="10dp"
-        app:waveBackground="#00f" />
+        app:waveBackground="#00f"
+        app:waveMargin="10dp"
+        app:waveWidth="10dp" />
 
     <com.jack.widget.WaveView
         android:layout_width="wrap_content"
