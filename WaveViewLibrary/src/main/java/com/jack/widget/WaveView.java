@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -140,7 +141,6 @@ public class WaveView extends LinearLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     mFractions[finalI] = (float) animation.getAnimatedValue();
-                    System.out.println("aaa===");
                 }
             });
             mValueAnimators[i] = animator;
@@ -184,6 +184,16 @@ public class WaveView extends LinearLayout {
         super.onWindowFocusChanged(hasWindowFocus);
         if (hasWindowFocus) {
             invalidate();
+            startAnim();
+        } else {
+            stopAnim();
+        }
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility == View.VISIBLE) {
             startAnim();
         } else {
             stopAnim();
