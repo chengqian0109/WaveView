@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -67,6 +66,8 @@ public class WaveView extends LinearLayout {
 
     public WaveView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        // 此行代码用于子 View 的动态展现；另解，删除此行代码，设置控件背景
+        setWillNotDraw(false);
         init(context, attrs);
     }
 
@@ -80,13 +81,6 @@ public class WaveView extends LinearLayout {
         mChildMargin = Math.max(waveMargin, mChildMargin);
         mAnimDuration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, 240);
         mAnimDelay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, 100);
-        Drawable drawable = typedArray.getDrawable(R.styleable.WaveView_waveBackground);
-        if (drawable != null) {
-            setBackground(drawable);
-        } else {
-            int bgColor = typedArray.getColor(R.styleable.WaveView_waveBackground, Color.TRANSPARENT);
-            setBackgroundColor(bgColor);
-        }
         typedArray.recycle();
 
         setOrientation(LinearLayout.HORIZONTAL);

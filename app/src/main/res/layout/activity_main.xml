@@ -10,13 +10,9 @@
 
     <com.jack.widget.WaveView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <com.jack.widget.WaveView
-        android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
-        app:waveBackground="#00f"
+        android:background="@color/colorPrimary"
         app:waveMargin="10dp"
         app:waveWidth="10dp" />
 
@@ -24,25 +20,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:waveBackground="@mipmap/ic_launcher"
         app:waveCount="5" />
 
     <com.jack.widget.WaveView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:waveColor="#f00" />
-
-    <com.jack.widget.WaveView
         android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
+        app:waveMargin="15dp"
         android:layout_marginTop="10dp"
-        app:waveColor="#f00" />
-
-    <com.jack.widget.WaveView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="10dp"
+        android:background="@mipmap/ic_launcher"
         app:waveColor="#f00" />
 
 </LinearLayout>
