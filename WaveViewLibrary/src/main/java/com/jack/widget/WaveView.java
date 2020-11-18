@@ -46,14 +46,14 @@ public class WaveView extends LinearLayout {
     /**
      * 最小高度
      */
-    private final int MIN_HEIGHT = dp2px(6);
+    private final int MIN_HEIGHT = dp2px(5);
 
     /**
      * 默认高度
      */
     private final int DEFAULT_HEIGHT = dp2px(10);
 
-    private int mChildWidth = dp2px(1.2f);
+    private int mChildWidth = dp2px(1f);
 
     private int mChildHeight = DEFAULT_HEIGHT;
 
@@ -67,7 +67,6 @@ public class WaveView extends LinearLayout {
 
     public WaveView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setWillNotDraw(false);
         init(context, attrs);
     }
 
@@ -211,19 +210,11 @@ public class WaveView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        // 计算所需的宽度，有可能计算值超出了可以显示的宽度
-        int calcWidth = mChildViews.length * mChildWidth + (mChildViews.length - 1) * mChildMargin
+        // 计算所需的宽度，忽略计算宽度很大，比方说屏幕宽度不足以完全显示控件的情况
+        int widthSize = mChildViews.length * mChildWidth + (mChildViews.length - 1) * mChildMargin
                 + getPaddingLeft() + getPaddingRight();
-        if (widthMode == MeasureSpec.EXACTLY) {
-            widthSize = Math.min(calcWidth, widthSize);
-        } else {
-            // 忽略计算宽度大于可以显示宽度的情况
-            widthSize = calcWidth;
-        }
         if (heightMode == MeasureSpec.EXACTLY) {
             mChildHeight = heightSize - getPaddingBottom() - getPaddingTop();
             mChildHeight = Math.max(MIN_HEIGHT, mChildHeight);
