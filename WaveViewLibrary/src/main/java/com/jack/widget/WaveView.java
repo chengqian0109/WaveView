@@ -15,12 +15,12 @@ import androidx.annotation.Nullable;
 
 /**
  * 乐动，线条默认为白色，相关自定义属性如下：<br/>
- * WaveView_waveColor 线条颜色<br/>
- * WaveView_waveCount 线条数量<br/>
- * WaveView_waveWidth 线条宽度<br/>
- * WaveView_waveMargin 相邻线条之间的间距<br/>
- * WaveView_waveAnimDuration 线条动画执行时长<br/>
- * WaveView_waveAnimDelay 相邻线条之间动画延时
+ * R.styleable.WaveView_waveColor 线条颜色<br/>
+ * R.styleable.WaveView_waveCount 线条数量<br/>
+ * R.styleable.WaveView_waveWidth 线条宽度<br/>
+ * R.styleable.WaveView_waveMargin 相邻线条之间的间距<br/>
+ * R.styleable.WaveView_waveAnimDuration 线条动画执行时长<br/>
+ * R.styleable.WaveView_waveAnimDelay 相邻线条之间动画延时
  *
  * @author chengqian
  * Created on 2020/11/16
@@ -42,14 +42,14 @@ public class WaveView extends View {
     private long mAnimDuration;
 
     /**
-     * 相邻两个子 view 动画执行的间隔
+     * 相邻两个线条动画执行的间隔
      */
     private long mAnimDelay;
 
     /**
      * 最小高度
      */
-    private final int MIN_HEIGHT = dp2px(5);
+    private final int MIN_HEIGHT = dp2px(3);
 
     /**
      * 默认高度
@@ -58,7 +58,7 @@ public class WaveView extends View {
 
     private int mWaveWidth = dp2px(1f);
 
-    private int mWaveMargin = dp2px(1.5f);
+    private int mWaveMargin = dp2px(1f);
 
     private ValueAnimator[] mValueAnimators;
 
@@ -79,13 +79,25 @@ public class WaveView extends View {
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WaveView);
         int waveColor = typedArray.getColor(R.styleable.WaveView_waveColor, Color.WHITE);
-        mWaveCount = typedArray.getInt(R.styleable.WaveView_waveCount, 3);
+
+        int count = typedArray.getInt(R.styleable.WaveView_waveCount, 3);
+        mWaveCount = count == 0 ? 3 : count;
+
         int waveWidth = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveWidth, mWaveWidth);
-        mWaveWidth = Math.max(waveWidth, mWaveWidth);
+        // 不关心线条很细的情况
+        mWaveWidth = waveWidth == 0 ? mWaveWidth : waveWidth;
+
         int waveMargin = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveMargin, mWaveMargin);
-        mWaveMargin = Math.max(waveMargin, mWaveMargin);
-        mAnimDuration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, 240);
-        mAnimDelay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, 100);
+        // 不关心线条间距很小的情况
+        mWaveMargin = waveMargin == 0 ? mWaveMargin : waveMargin;
+
+        int duration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, 240);
+        // 不关心因为动画执行时长导致的实际效果
+        mAnimDuration = duration == 0 ? 240 : duration;
+
+        int delay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, 100);
+        // 不关心因为动画延时导致的实际效果
+        mAnimDelay = delay == 0 ? 100 : delay;
         typedArray.recycle();
 
         mPaint = new Paint();
@@ -103,6 +115,7 @@ public class WaveView extends View {
      */
     public void initAnim() {
         for (int i = 0; i < mValueAnimators.length; i++) {
+            // 设置线条长度的变化比例范围为 0.3~1.0
             ValueAnimator animator = ValueAnimator.ofFloat(0.3f, 1);
             animator.setDuration(mAnimDuration);
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
