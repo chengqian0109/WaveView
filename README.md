@@ -49,7 +49,7 @@
 |:---:|:---:|:---:|:---:|
 |waveColor|color|线条颜色，默认白色|setWaveColor(int color)或setWaveColorRes(int colorId)
 |waveCount|integer|线条数量，默认值3|setWaveCount(int waveCount)
-|waveWidth|dimension|线条宽度，默认值1dp|setWaveWidth(int pixels)或setWaveWidthDp(int dpValue)或setWaveWidthRes(int dimensionId)
+|waveWidth|dimension|线条宽度，默认值1dp|setWaveWidth(int pixels)或setWaveWidthDp(float dpValue)或setWaveWidthRes(int dimensionId)
 |waveMargin|dimension|相邻线条之间的间距，默认值1dp|setWaveMargin(int pixels)或setWaveMarginDp(float dpValue)或setWaveMarginRes(int dimensionId)
 |waveAnimDuration|integer|单次动画执行时长，默认值240ms|setAnimDuration(int animDuration)
 |waveAnimDelay|integer|相邻线条动画延时，默认值100ms|setAnimDelay(int animDelay)
