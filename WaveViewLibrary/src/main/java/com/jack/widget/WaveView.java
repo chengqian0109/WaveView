@@ -10,8 +10,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+import androidx.core.content.ContextCompat;
 
 /**
  * 乐动，线条默认为白色，相关自定义属性如下：<br/>
@@ -29,7 +35,7 @@ public class WaveView extends View {
 
     private Paint mPaint;
 
-    private int mWaveCount;
+    private int mWaveCount = 3;
 
     /**
      * 线条长度的变化比例
@@ -39,12 +45,12 @@ public class WaveView extends View {
     /**
      * 动画执行一次的时长
      */
-    private long mAnimDuration;
+    private int mAnimDuration = 240;
 
     /**
      * 相邻两个线条动画执行的间隔
      */
-    private long mAnimDelay;
+    private int mAnimDelay = 100;
 
     /**
      * 最小高度
@@ -62,13 +68,17 @@ public class WaveView extends View {
 
     private ValueAnimator[] mValueAnimators;
 
+    private int mWaveColor = Color.WHITE;
+
     /**
      * 控件最终的高度
      */
     private int mHeight;
 
     public WaveView(Context context) {
-        this(context, null);
+        super(context);
+        initPaint();
+        initAnim();
     }
 
     public WaveView(Context context, @Nullable AttributeSet attrs) {
@@ -76,12 +86,22 @@ public class WaveView extends View {
         init(context, attrs);
     }
 
+    /**
+     * 初始化画笔
+     */
+    private void initPaint() {
+        mPaint = new Paint();
+        mPaint.setColor(mWaveColor);
+        mPaint.setStrokeWidth(8);
+        mPaint.setStyle(Paint.Style.FILL);
+    }
+
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WaveView);
-        int waveColor = typedArray.getColor(R.styleable.WaveView_waveColor, Color.WHITE);
+        mWaveColor = typedArray.getColor(R.styleable.WaveView_waveColor, mWaveColor);
 
-        int count = typedArray.getInt(R.styleable.WaveView_waveCount, 3);
-        mWaveCount = count == 0 ? 3 : count;
+        int count = typedArray.getInt(R.styleable.WaveView_waveCount, mWaveCount);
+        mWaveCount = count == 0 ? mWaveCount : count;
 
         int waveWidth = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveWidth, mWaveWidth);
         // 不关心线条很细的情况
@@ -91,22 +111,16 @@ public class WaveView extends View {
         // 不关心线条间距很小的情况
         mWaveMargin = waveMargin == 0 ? mWaveMargin : waveMargin;
 
-        int duration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, 240);
+        int duration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, mAnimDuration);
         // 不关心因为动画执行时长导致的实际效果
-        mAnimDuration = duration == 0 ? 240 : duration;
+        mAnimDuration = duration == 0 ? mAnimDuration : duration;
 
-        int delay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, 100);
+        int delay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, mAnimDelay);
         // 不关心因为动画延时导致的实际效果
-        mAnimDelay = delay == 0 ? 100 : delay;
+        mAnimDelay = delay == 0 ? mAnimDelay : delay;
         typedArray.recycle();
 
-        mPaint = new Paint();
-        mPaint.setColor(waveColor);
-        mPaint.setStrokeWidth(8);
-        mPaint.setStyle(Paint.Style.FILL);
-
-        mValueAnimators = new ValueAnimator[mWaveCount];
-        mFractions = new float[mWaveCount];
+        initPaint();
         initAnim();
     }
 
@@ -114,6 +128,8 @@ public class WaveView extends View {
      * 初始化动画
      */
     public void initAnim() {
+        mValueAnimators = new ValueAnimator[mWaveCount];
+        mFractions = new float[mWaveCount];
         for (int i = 0; i < mValueAnimators.length; i++) {
             // 设置线条长度的变化比例范围为 0.3~1.0
             ValueAnimator animator = ValueAnimator.ofFloat(0.3f, 1);
@@ -132,7 +148,6 @@ public class WaveView extends View {
                 }
             });
             mValueAnimators[i] = animator;
-            animator.start();
         }
     }
 
@@ -205,7 +220,7 @@ public class WaveView extends View {
     /**
      * 开启动画
      */
-    public void startAnim() {
+    private void startAnim() {
         if (mValueAnimators[0].isRunning()) {
             return;
         }
@@ -217,7 +232,7 @@ public class WaveView extends View {
     /**
      * 停止动画
      */
-    public void stopAnim() {
+    private void stopAnim() {
         if (mValueAnimators[0].isRunning()) {
             for (ValueAnimator valueAnimator : mValueAnimators) {
                 valueAnimator.cancel();
@@ -234,5 +249,141 @@ public class WaveView extends View {
         } else {
             stopAnim();
         }
+    }
+
+    /**
+     * 设置线条颜色值
+     *
+     * @param color 颜色值
+     */
+    public void setWaveColor(@ColorInt int color) {
+        mWaveColor = color;
+        mPaint.setColor(mWaveColor);
+    }
+
+    /**
+     * 设置线条颜色资源ID
+     *
+     * @param colorId 颜色资源ID
+     */
+    public void setWaveColorRes(@ColorRes int colorId) {
+        mWaveColor = ContextCompat.getColor(getContext(), colorId);
+    }
+
+    /**
+     * 设置线条数量
+     *
+     * @param waveCount 线条数量
+     */
+    public void setWaveCount(int waveCount) {
+        if (waveCount <= 0) {
+            return;
+        }
+        mWaveCount = waveCount;
+        initAnim();
+    }
+
+    /**
+     * 设置动画执行时长
+     *
+     * @param animDuration 动画时长
+     */
+    public void setAnimDuration(int animDuration) {
+        if (animDuration <= 0) {
+            return;
+        }
+        mAnimDuration = animDuration;
+        updateAnimDuration();
+    }
+
+    /**
+     * 更新动画时长
+     */
+    private void updateAnimDuration() {
+        if (mValueAnimators != null && mValueAnimators.length > 0) {
+            for (ValueAnimator animator : mValueAnimators) {
+                animator.setDuration(mAnimDuration);
+            }
+        }
+    }
+
+    /**
+     * 设置相邻线条动画延时
+     *
+     * @param animDelay 动画延时
+     */
+    public void setAnimDelay(int animDelay) {
+        if (animDelay <= 0) {
+            return;
+        }
+        mAnimDelay = animDelay;
+        updateAnimDelay();
+    }
+
+    /**
+     * 更新动画延时
+     */
+    private void updateAnimDelay() {
+        if (mValueAnimators != null && mValueAnimators.length > 0) {
+            for (int i = 0; i < mValueAnimators.length; i++) {
+                if (i != 0) {
+                    mValueAnimators[i].setStartDelay(mAnimDelay);
+                }
+            }
+        }
+    }
+
+    /**
+     * 设置线条间距
+     *
+     * @param pixels 线条间距：像素
+     */
+    public void setWaveMargin(@Px int pixels) {
+        if (pixels <= 0) {
+            return;
+        }
+        mWaveMargin = pixels;
+    }
+
+    /**
+     * 设置线条间距
+     *
+     * @param dimensionId 资源ID
+     */
+    public void setWaveMarginRes(@DimenRes int dimensionId) {
+        mWaveMargin = getResources().getDimensionPixelSize(dimensionId);
+    }
+
+    /**
+     * 设置线条宽度像素值
+     *
+     * @param pixels 线条宽度：像素
+     */
+    public void setWaveWidth(@Px int pixels) {
+        if (pixels <= 0) {
+            return;
+        }
+        mWaveWidth = pixels;
+    }
+
+    /**
+     * 设置线条宽度
+     *
+     * @param dpValue 线条宽度dp值
+     */
+    public void setWaveWidthDp(@Dimension int dpValue) {
+        if (dpValue <= 0) {
+            return;
+        }
+        mWaveWidth = dp2px(dpValue);
+    }
+
+    /**
+     * 设置线条宽度
+     *
+     * @param dimensionId 线条宽度资源ID
+     */
+    public void setWaveWidthRes(@DimenRes int dimensionId) {
+        mWaveWidth = getResources().getDimensionPixelSize(dimensionId);
     }
 }
