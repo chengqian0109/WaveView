@@ -20,16 +20,18 @@ import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
 
 /**
- * 乐动，线条默认为白色，相关自定义属性如下：<br/>
- * R.styleable.WaveView_waveColor 线条颜色<br/>
- * R.styleable.WaveView_waveCount 线条数量<br/>
- * R.styleable.WaveView_waveWidth 线条宽度<br/>
- * R.styleable.WaveView_waveMargin 相邻线条之间的间距<br/>
- * R.styleable.WaveView_waveAnimDuration 线条动画执行时长<br/>
- * R.styleable.WaveView_waveAnimDelay 相邻线条之间动画延时
+ * 乐动，线条默认为白色
  *
  * @author chengqian
  * Created on 2020/11/16
+ * @attr R.styleable.WaveView_waveColor 线条颜色<br/>
+ * @attr R.styleable.WaveView_waveCount 线条数量<br/>
+ * @attr R.styleable.WaveView_waveWidth 线条宽度<br/>
+ * @attr R.styleable.WaveView_waveMargin 相邻线条之间的间距<br/>
+ * @attr R.styleable.WaveView_waveAnimDuration 线条动画执行时长<br/>
+ * @attr R.styleable.WaveView_waveAnimDelay 相邻线条之间动画延时<br/>
+ * @attr R.styleable.WaveView_waveMinRatio 线条长度的最小显示比例，有效取值为(0,1]<br/>
+ * @attr R.styleable.WaveView_waveGravity 枚举类型，具体参考 {@link Gravity} 说明
  */
 public class WaveView extends View {
 
@@ -40,7 +42,7 @@ public class WaveView extends View {
     /**
      * 线条长度的变化比例
      */
-    private float[] mFractions;
+    private float[] mRatios;
 
     /**
      * 动画执行一次的时长
@@ -69,6 +71,19 @@ public class WaveView extends View {
     private ValueAnimator[] mValueAnimators;
 
     private int mWaveColor = Color.WHITE;
+
+    /**
+     * 线条长度比例的最小值
+     */
+    private float mWaveMinRatio = 0.3f;
+
+    /**
+     * 线条相对画布的位置
+     *
+     * @see Gravity#BOTTOM
+     * @see Gravity#CENTER
+     */
+    private Gravity mWaveGravity = Gravity.CENTER;
 
     /**
      * 控件最终的高度
@@ -118,6 +133,21 @@ public class WaveView extends View {
         int delay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, mAnimDelay);
         // 不关心因为动画延时导致的实际效果
         mAnimDelay = delay == 0 ? mAnimDelay : delay;
+
+        int gravity = typedArray.getInt(R.styleable.WaveView_waveGravity, -1);
+        if (gravity != -1) {
+            mWaveGravity = gravity == 0 ? Gravity.BOTTOM : Gravity.CENTER;
+        }
+
+        float minRatio = typedArray.getFloat(R.styleable.WaveView_waveMinRatio, mWaveMinRatio);
+        if (minRatio != 0) {
+            // 过滤掉线条显示比例无效的数值
+            if (minRatio > 0 && minRatio <= 1) {
+                mWaveMinRatio = minRatio;
+            }
+        } else {
+            mWaveMinRatio = minRatio;
+        }
         typedArray.recycle();
 
         initPaint();
@@ -129,22 +159,20 @@ public class WaveView extends View {
      */
     public void initAnim() {
         mValueAnimators = new ValueAnimator[mWaveCount];
-        mFractions = new float[mWaveCount];
+        mRatios = new float[mWaveCount];
         for (int i = 0; i < mValueAnimators.length; i++) {
             // 设置线条长度的变化比例范围为 0.3~1.0
-            ValueAnimator animator = ValueAnimator.ofFloat(0.3f, 1);
+            ValueAnimator animator = ValueAnimator.ofFloat(mWaveMinRatio, 1);
             animator.setDuration(mAnimDuration);
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
             animator.setRepeatCount(ValueAnimator.INFINITE);
-            if (i != 0) {
-                animator.setStartDelay(i * mAnimDelay);
-            }
+            animator.setStartDelay(i * mAnimDelay);
             animator.setRepeatMode(ValueAnimator.REVERSE);
             final int finalI = i;
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    mFractions[finalI] = (float) animation.getAnimatedValue();
+                    mRatios[finalI] = (float) animation.getAnimatedValue();
                 }
             });
             mValueAnimators[i] = animator;
@@ -160,11 +188,26 @@ public class WaveView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.translate(0, mHeight / 2f);
-        for (int i = 0; i < mWaveCount; i++) {
-            canvas.drawRect(i * (mWaveWidth + mWaveMargin), -mFractions[i] * mHeight / 2,
-                    i * (mWaveWidth + mWaveMargin) + mWaveWidth, mFractions[i] * mHeight / 2, mPaint);
+        if (mWaveGravity == Gravity.CENTER) {
+            canvas.translate(0, mHeight / 2f);
+            for (int i = 0; i < mWaveCount; i++) {
+                canvas.drawRect(
+                        i * (mWaveWidth + mWaveMargin),
+                        -mRatios[i] * mHeight / 2,
+                        i * (mWaveWidth + mWaveMargin) + mWaveWidth,
+                        mRatios[i] * mHeight / 2, mPaint);
+            }
+        } else if (mWaveGravity == Gravity.BOTTOM) {
+            canvas.translate(0, mHeight);
+            for (int i = 0; i < mWaveCount; i++) {
+                canvas.drawRect(
+                        i * (mWaveWidth + mWaveMargin),
+                        -mRatios[i] * mHeight,
+                        i * (mWaveWidth + mWaveMargin) + mWaveWidth,
+                        0, mPaint);
+            }
         }
+
         invalidate();
     }
 
@@ -279,6 +322,10 @@ public class WaveView extends View {
         if (waveCount <= 0) {
             return;
         }
+        // 线条个数不允许二次赋值
+        if (mValueAnimators[0].isRunning()) {
+            return;
+        }
         mWaveCount = waveCount;
         initAnim();
     }
@@ -326,9 +373,7 @@ public class WaveView extends View {
     private void updateAnimDelay() {
         if (mValueAnimators != null && mValueAnimators.length > 0) {
             for (int i = 0; i < mValueAnimators.length; i++) {
-                if (i != 0) {
-                    mValueAnimators[i].setStartDelay(mAnimDelay);
-                }
+                mValueAnimators[i].setStartDelay(i * mAnimDelay);
             }
         }
     }
@@ -385,5 +430,44 @@ public class WaveView extends View {
      */
     public void setWaveWidthRes(@DimenRes int dimensionId) {
         mWaveWidth = getResources().getDimensionPixelSize(dimensionId);
+    }
+
+    /**
+     * 设置线条绘制位置
+     *
+     * @param waveGravity Gravity.BOTTOM 和 Gravity.CENTER
+     * @see Gravity#BOTTOM
+     * @see Gravity#CENTER
+     */
+    public void setWaveGravity(Gravity waveGravity) {
+        mWaveGravity = waveGravity;
+    }
+
+    /**
+     * 设置线条长度最小显示比例
+     *
+     * @param waveMinRatio 线条长度最小显示比例
+     */
+    public void setWaveMinRatio(float waveMinRatio) {
+        if (waveMinRatio <= 0 || waveMinRatio > 1) {
+            return;
+        }
+        // 最小显示比例不允许二次赋值
+        if (mValueAnimators[0].isRunning()) {
+            return;
+        }
+        mWaveMinRatio = waveMinRatio;
+    }
+
+    public enum Gravity {
+        /**
+         * 画布坐标原点纵坐标在线条底部
+         */
+        BOTTOM,
+
+        /**
+         * 画布坐标原点纵坐标在线条中央
+         */
+        CENTER;
     }
 }

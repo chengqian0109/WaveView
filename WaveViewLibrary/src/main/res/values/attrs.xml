@@ -7,5 +7,10 @@
         <attr name="waveAnimDuration" format="integer" />
         <attr name="waveAnimDelay" format="integer" />
         <attr name="waveMargin" format="dimension" />
+        <attr name="waveMinRatio" format="float" />
+        <attr name="waveGravity" format="enum">
+            <enum name="bottom" value="0" />
+            <enum name="center" value="1" />
+        </attr>
     </declare-styleable>
 </resources>
