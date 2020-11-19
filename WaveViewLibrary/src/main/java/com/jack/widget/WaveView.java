@@ -140,12 +140,8 @@ public class WaveView extends View {
         }
 
         float minRatio = typedArray.getFloat(R.styleable.WaveView_waveMinRatio, mWaveMinRatio);
-        if (minRatio != 0) {
-            // 过滤掉线条显示比例无效的数值
-            if (minRatio > 0 && minRatio <= 1) {
-                mWaveMinRatio = minRatio;
-            }
-        } else {
+        // 过滤掉线条显示比例无效的数值
+        if (minRatio > 0 && minRatio <= 1) {
             mWaveMinRatio = minRatio;
         }
         typedArray.recycle();
