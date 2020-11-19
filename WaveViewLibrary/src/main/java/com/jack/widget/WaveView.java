@@ -157,7 +157,7 @@ public class WaveView extends View {
         mValueAnimators = new ValueAnimator[mWaveCount];
         mRatios = new float[mWaveCount];
         for (int i = 0; i < mValueAnimators.length; i++) {
-            // 设置线条长度的变化比例范围为 0.3~1.0
+            // 设置线条长度的变化比例范围
             ValueAnimator animator = ValueAnimator.ofFloat(mWaveMinRatio, 1);
             animator.setDuration(mAnimDuration);
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
