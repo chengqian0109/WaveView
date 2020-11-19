@@ -116,23 +116,23 @@ public class WaveView extends View {
         mWaveColor = typedArray.getColor(R.styleable.WaveView_waveColor, mWaveColor);
 
         int count = typedArray.getInt(R.styleable.WaveView_waveCount, mWaveCount);
-        mWaveCount = count == 0 ? mWaveCount : count;
+        mWaveCount = count <= 0 ? mWaveCount : count;
 
         int waveWidth = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveWidth, mWaveWidth);
         // 不关心线条很细的情况
-        mWaveWidth = waveWidth == 0 ? mWaveWidth : waveWidth;
+        mWaveWidth = waveWidth <= 0 ? mWaveWidth : waveWidth;
 
         int waveMargin = typedArray.getDimensionPixelSize(R.styleable.WaveView_waveMargin, mWaveMargin);
         // 不关心线条间距很小的情况
-        mWaveMargin = waveMargin == 0 ? mWaveMargin : waveMargin;
+        mWaveMargin = waveMargin <= 0 ? mWaveMargin : waveMargin;
 
         int duration = typedArray.getInteger(R.styleable.WaveView_waveAnimDuration, mAnimDuration);
         // 不关心因为动画执行时长导致的实际效果
-        mAnimDuration = duration == 0 ? mAnimDuration : duration;
+        mAnimDuration = duration <= 0 ? mAnimDuration : duration;
 
         int delay = typedArray.getInteger(R.styleable.WaveView_waveAnimDelay, mAnimDelay);
         // 不关心因为动画延时导致的实际效果
-        mAnimDelay = delay == 0 ? mAnimDelay : delay;
+        mAnimDelay = delay <= 0 ? mAnimDelay : delay;
 
         int gravity = typedArray.getInt(R.styleable.WaveView_waveGravity, -1);
         if (gravity != -1) {
