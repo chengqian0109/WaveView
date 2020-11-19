@@ -11,6 +11,17 @@
 
     <com.jack.widget.WaveView
         android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        app:waveGravity="bottom"
+        app:waveAnimDuration="500"
+        app:waveAnimDelay="180"
+        android:background="@color/colorAccent"
+        app:waveMargin="10dp"
+        app:waveWidth="10dp" />
+
+    <com.jack.widget.WaveView
+        android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
         android:background="@color/colorPrimary"
@@ -20,7 +31,7 @@
     <com.jack.widget.WaveView
         android:layout_width="wrap_content"
         android:background="@color/colorAccent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginTop="10dp"
         app:waveCount="5" />
 
@@ -30,12 +41,14 @@
         android:layout_marginTop="10dp"
         android:background="@mipmap/ic_launcher"
         app:waveColor="#f00"
+        android:layout_marginBottom="10dp"
         app:waveMargin="15dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:text="set"
         android:onClick="set"
+        android:visibility="gone"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>

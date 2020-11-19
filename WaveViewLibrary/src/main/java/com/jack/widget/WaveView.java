@@ -389,6 +389,18 @@ public class WaveView extends View {
     /**
      * 设置线条间距
      *
+     * @param dpValue 线条间距：dp
+     */
+    public void setWaveMarginDp(@Dimension float dpValue) {
+        if (dpValue <= 0) {
+            return;
+        }
+        mWaveMargin = dp2px(dpValue);
+    }
+
+    /**
+     * 设置线条间距
+     *
      * @param dimensionId 资源ID
      */
     public void setWaveMarginRes(@DimenRes int dimensionId) {
@@ -412,7 +424,7 @@ public class WaveView extends View {
      *
      * @param dpValue 线条宽度dp值
      */
-    public void setWaveWidthDp(@Dimension int dpValue) {
+    public void setWaveWidthDp(@Dimension float dpValue) {
         if (dpValue <= 0) {
             return;
         }
